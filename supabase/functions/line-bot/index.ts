@@ -3,9 +3,10 @@
 // This enables autocomplete, go to definition, etc.
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { replyMessage } from './messages.ts'
 import { supabaseClient } from './supabaseClient.ts'
 import { Quiz } from "./quiz.ts"
+import { flashCardMessage, replyMessage } from './messages.ts'
+import { shuffle } from "./lib.ts"
 console.log("Hello from Functions!")
 
 serve(async (req) => {
@@ -23,7 +24,19 @@ serve(async (req) => {
         "text": "テスト / test で単語を登録できます"
       }
     ]
-    if (events[0].message.text.match(/\//g)) {
+    if (events[0].message.text === 'スタート') {
+      const { data, error } = await supabaseClient(req).from('quiz').select('id,question,answer')
+      const quizList = shuffle(data).slice(0, 5)
+      // クイズを開始する
+      messages = [
+        {
+          "type": "text",
+          "text": "問題を始めるよ！"
+        },
+        flashCardMessage(quizList[0].question, {list: quizList})
+      ]
+      console.log({ messages, quizList })
+    } else if (events[0].message.text.match(/\//g)) {
       // MEMO:
       // 送られたメッセージの中に `/` が含まれている場合は文字列を分割して保存する
       const [question, answer] = events[0].message.text.split('/')
@@ -33,6 +46,39 @@ serve(async (req) => {
     }
     replyMessage(events, messages)
   }
+
+  if (events && events[0]?.type === "postback") {
+    const postbackMessages = [
+      {
+        "type": "text",
+        "text": `data：${events[0].postback.data}`
+      }
+    ]
+    const messages = [
+      ...postbackMessages
+    ]
+    const postbackData = JSON.parse(events[0].postback.data)
+    let [first, ...list] = postbackData.list
+
+    if(postbackData.action === 'nextCard') {
+      messages.push({
+          "type": "text",
+          "text": `こたえは「${first.answer}」です`
+      })
+      if(list.length > 0) {
+        messages.push(
+          flashCardMessage(list[0].question, {list: list}) // 続きの問題を返す
+        )
+      } else {
+        messages.push({
+          "type": "text",
+          "text": `おわったよ！`
+        })
+      }
+    }
+    replyMessage(events, messages)
+  }
+
 
   return new Response(
     JSON.stringify({ status: "ok"}),
