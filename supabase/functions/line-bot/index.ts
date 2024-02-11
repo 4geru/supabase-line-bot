@@ -25,15 +25,18 @@ serve(async (req) => {
       }
     ]
     if (events[0].message.text === 'スタート') {
-      const { data, error } = await supabaseClient(req).from('quiz').select('id,question,answer')
+      const { data, error } = await supabaseClient(req).from('quiz').select('id')
       const quizList = shuffle(data).slice(0, 5)
+      const { data: [quiz] } = await supabaseClient(req).from('quiz')
+        .select('question')
+        .eq('id', quizList[0].id)
       // クイズを開始する
       messages = [
         {
           "type": "text",
           "text": "問題を始めるよ！"
         },
-        flashCardMessage(quizList[0].question, {list: quizList})
+        flashCardMessage(quiz.question, {list: quizList})
       ]
       console.log({ messages, quizList })
     } else if (events[0].message.text.match(/\//g)) {
@@ -61,13 +64,20 @@ serve(async (req) => {
     let [first, ...list] = postbackData.list
 
     if(postbackData.action === 'nextCard') {
+      const { data: quiz } = await supabaseClient(req).from('quiz')
+        .select('id,answer,question')
+        .in('id', [first.id, list[0]?.id].filter(item => item))
+      const [answerQuiz, nextQuiz] = quiz[0].id == first.id ?
+        [quiz[0], quiz[1]] :
+        [quiz[1], quiz[0]]
+
       messages.push({
           "type": "text",
-          "text": `こたえは「${first.answer}」です`
+          "text": `こたえは「${answerQuiz.answer}」です`
       })
       if(list.length > 0) {
         messages.push(
-          flashCardMessage(list[0].question, {list: list}) // 続きの問題を返す
+          flashCardMessage(nextQuiz.question, {list: list}) // 続きの問題を返す
         )
       } else {
         messages.push({
