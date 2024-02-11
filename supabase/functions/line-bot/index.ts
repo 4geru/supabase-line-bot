@@ -14,11 +14,36 @@ serve(async (req) => {
     let messages:any = [
       {
         "type": "text",
-        "text": "こんにちは！"
+        "text": `受け取ったメッセージ：${events[0].message.text}`,
+        "quoteToken": events[0].message.quoteToken
       },
       {
         "type": "text",
         "text": "テスト / test で単語を登録できます"
+      },
+      {
+        "type": "sticker",
+        "packageId": 11537,
+        "stickerId": 52002734,
+        "quickReply": {
+          "items": [
+            {
+              "type": "action",
+              "action": {
+                "type": "message",
+                "label": "スタート",
+                "text": "スタート"
+              }
+            },
+            {
+              "type": "action",
+              "action": {
+                "type": "location",
+                "label": "位置を送る"
+              }
+            }
+          ]
+        }
       }
     ]
     replyMessage(events, messages)
