@@ -7,6 +7,12 @@ export const flashCardMessage = (question, data?) => {
         "data": JSON.stringify({action: 'nextCard', ...data}),
       },
       {
+        "type": "postback",
+        "label": "削除する",
+        "inputOption": "openRichMenu",
+        "data": JSON.stringify({action: 'deleteCard', ...data}),
+      },
+      {
         "type": "clipboard",
         "label": "コピーする",
         "clipboardText": question

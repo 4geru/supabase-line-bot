@@ -66,7 +66,7 @@ serve(async (req) => {
     let [first, ...list] = postbackData.list
 
     if(postbackData.action === 'nextCard') {
-      const { data: quiz } = await supabaseClient(req).from('quiz')
+      const { data: quiz } = await supabaseClient().from('quiz')
         .select('id,answer,question')
         .in('id', [first.id, list[0]?.id].filter(item => item))
       const [answerQuiz, nextQuiz] = quiz[0].id == first.id ?
@@ -87,6 +87,13 @@ serve(async (req) => {
           "text": `おわったよ！`
         })
       }
+    }
+    if(postbackData.action === 'deleteCard') {
+      await supabaseClient().from('quiz').delete().eq('id', first.id)
+      messages.push({
+          "type": "text",
+          "text": "削除しました"
+      })
     }
     replyMessage(events, messages)
   }
