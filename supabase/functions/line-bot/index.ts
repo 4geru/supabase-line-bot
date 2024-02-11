@@ -86,6 +86,13 @@ serve(async (req) => {
         })
       }
     }
+    if(postbackData.action === 'deleteCard') {
+      await supabaseClient(req).from('quiz').delete().eq('id', first.id)
+      messages.push({
+          "type": "text",
+          "text": "削除しました"
+      })
+    }
     replyMessage(events, messages)
   }
 
