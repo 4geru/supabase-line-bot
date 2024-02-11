@@ -5,6 +5,11 @@ export const flashCardMessage = (question, data?) => {
         "label": "答えを見る",
         "inputOption": "openRichMenu",
         "data": JSON.stringify({action: 'nextCard', ...data}),
+      },
+      {
+        "type": "clipboard",
+        "label": "コピーする",
+        "clipboardText": question
       }
     ]
 
