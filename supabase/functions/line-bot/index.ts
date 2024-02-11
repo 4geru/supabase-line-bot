@@ -65,15 +65,23 @@ serve(async (req) => {
 
     if(postbackData.action === 'nextCard') {
       const { data: quiz } = await supabaseClient(req).from('quiz')
-        .select('id,answer,question')
+        .select('id,answer,question,count')
         .in('id', [first.id, list[0]?.id].filter(item => item))
       const [answerQuiz, nextQuiz] = quiz[0].id == first.id ?
         [quiz[0], quiz[1]] :
         [quiz[1], quiz[0]]
-
+      const nextCount = answerQuiz.count + 1
+      await supabaseClient(req)
+        .from('quiz')
+        .update({ count: nextCount })
+        .eq('id', first.id)
       messages.push({
           "type": "text",
           "text": `こたえは「${answerQuiz.answer}」です`
+      })
+      messages.push({
+        "type": "text",
+        "text": `${nextCount}回押されました`
       })
       if(list.length > 0) {
         messages.push(
