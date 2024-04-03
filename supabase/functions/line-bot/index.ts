@@ -15,11 +15,44 @@ serve(async (req) => {
     let messages:any = [
       {
         "type": "text",
-        "text": "こんにちは！"
+        "text": `受け取ったメッセージ：${events[0].message.text}`,
+        "quoteToken": events[0].message.quoteToken,
+        sender: {
+          "name": "おうむ返しさん",
+          "iconUrl": "https://2.bp.blogspot.com/-7LcdiJjflkE/XASwYu6DyuI/AAAAAAABQZs/K0EQCKmvDmsVbEES7sAb6_xJhJyQXXLFgCLcBGAs/s40-c/bluebird_robot_bot.png"
+        }
       },
       {
         "type": "text",
-        "text": "テスト / test で単語を登録できます"
+        "text": "テスト / test で単語を登録できます",
+        sender: {
+          "name": "実況お兄さん",
+          "iconUrl": "https://2.bp.blogspot.com/-Qlj91t78oGY/Us_MAKjaVFI/AAAAAAAAc_c/hLmCvD-VjB0/s40-c/job_sports_jikkyou.png"
+        }
+      },
+      {
+        "type": "sticker",
+        "packageId": 11537,
+        "stickerId": 52002734,
+        "quickReply": {
+          "items": [
+            {
+              "type": "action",
+              "action": {
+                "type": "message",
+                "label": "スタート",
+                "text": "スタート"
+              }
+            },
+            {
+              "type": "action",
+              "action": {
+                "type": "location",
+                "label": "位置を送る"
+              }
+            }
+          ]
+        }
       }
     ]
     replyMessage(events, messages)
