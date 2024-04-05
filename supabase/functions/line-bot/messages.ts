@@ -3,13 +3,11 @@ export const flashCardMessage = (question, data?) => {
       {
         "type": "postback",
         "label": "答えを見る",
-        "inputOption": "openRichMenu",
         "data": JSON.stringify({action: 'nextCard', ...data}),
       },
       {
         "type": "postback",
         "label": "削除する",
-        "inputOption": "openRichMenu",
         "data": JSON.stringify({action: 'deleteCard', ...data}),
       },
       {
@@ -41,6 +39,61 @@ export const flashCardMessage = (question, data?) => {
     }
 }
 
+export const flashCardFlexMessage = (question, data?) => {
+  const bubble = {
+    "type": "bubble",
+    "body": {
+      "type": "box",
+      "layout": "vertical",
+      "spacing": "sm",
+      "contents": [
+        {
+          "type": "text",
+          "text": question,
+          "wrap": true,
+          "weight": "bold",
+          "size": "xl"
+        }
+      ]
+    },
+    "footer": {
+      "type": "box",
+      "layout": "vertical",
+      "spacing": "sm",
+      "contents": [
+        {
+          "type": "button",
+          "style": "primary",
+          "action": {
+            "type": "postback",
+            "label": "答えを見る",
+            "data": JSON.stringify({action: 'nextCard', ...data}),
+          }
+        },
+        {
+          "type": "button",
+          "action": {
+            "type": "postback",
+            "label": "削除する",
+            "data": JSON.stringify({action: 'deleteCard', ...data}),
+          },
+          "color": "#E50000",
+          "style": "primary"
+        },
+        {
+          "type": "button",
+          "action": {
+            "type": "clipboard",
+            "label": "コピーする",
+            "clipboardText": question
+          }
+        }
+      ]
+    }
+  }
+  return flexMessage(bubble, '単語帳のメッセージを表示中')
+}
+
 export const replyMessage = (events, messages) => {
     const dataString = JSON.stringify({
         replyToken: events[0].replyToken,
@@ -64,10 +117,10 @@ export const replyMessage = (events, messages) => {
     .catch(e => { console.log(e) })
 }
 
-export const flexMessage = (contents) => {
+export const flexMessage = (contents, altText) => {
     return {
         "type": "flex",
-        "altText": "This is a Flex Message",
+        "altText": altText,
         "contents": contents
     }
 }
