@@ -5,7 +5,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { supabaseClient } from './supabaseClient.ts'
 import { Quiz } from "./quiz.ts"
-import { flashCardMessage, replyMessage } from './messages.ts'
+import { flashCardFlexMessage, replyMessage } from './messages.ts'
 import { shuffle } from "./lib.ts"
 
 console.log("Hello from Functions!")
@@ -35,7 +35,7 @@ serve(async (req) => {
           "type": "text",
           "text": "問題を始めるよ！"
         },
-        flashCardMessage(quizList[0].question, {list: quizList})
+        flashCardFlexMessage(quizList[0].question, {list: quizList})
       ]
       console.log({ messages, quizList })
     } else if (events[0].message.text.match(/\//g)) {
@@ -69,7 +69,7 @@ serve(async (req) => {
       })
       if(list.length > 0) {
         messages.push(
-          flashCardMessage(list[0].question, {list: list}) // 続きの問題を返す
+          flashCardFlexMessage(list[0].question, {list: list}) // 続きの問題を返す
         )
       } else {
         messages.push({
