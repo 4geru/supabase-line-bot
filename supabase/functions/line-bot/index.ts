@@ -4,6 +4,8 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { replyMessage } from './messages.ts'
+import { supabaseClient } from './supabaseClient.ts'
+import { Quiz } from "./quiz.ts"
 
 console.log("Hello from Functions!")
 
@@ -22,6 +24,15 @@ serve(async (req) => {
         "text": "テスト / test で単語を登録できます"
       }
     ]
+
+    if (events[0].message.text.match(/\//g)) {
+      // MEMO:
+      // 送られたメッセージの中に `/` が含まれている場合は文字列を分割して保存する
+      const [question, answer] = events[0].message.text.split('/')
+      const quiz = new Quiz({question, answer})
+      await quiz.saveToSupabase(supabaseClient(req))
+      messages = quiz.savedMessages()
+    }
     replyMessage(events, messages)
   }
 
