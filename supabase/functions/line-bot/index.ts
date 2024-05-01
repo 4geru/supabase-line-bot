@@ -3,7 +3,7 @@
 // This enables autocomplete, go to definition, etc.
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { replyMessage } from './messages.ts'
+import { replyMessage, pushMessage } from './messages.ts'
 import { supabaseClient } from './supabaseClient.ts'
 import { Quiz } from "./quiz.ts"
 
@@ -33,6 +33,7 @@ serve(async (req) => {
       await quiz.saveToSupabase(supabaseClient(req))
       messages = quiz.savedMessages()
     }
+    pushMessage(events[0].source.userId, messages)
     replyMessage(events, messages)
   }
 
