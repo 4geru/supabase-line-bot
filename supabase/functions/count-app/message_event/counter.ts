@@ -5,8 +5,9 @@ export const isCounterMessage = (text: string) => {
     return false
 }
 
-export const executeCounterMessage = async (user: any) => {
-    await user.updateStatus({ count: user.info.status.count + 1 })
+export const executeCounterMessage = async (user: any, text: string) => {
+    const nextCount = user.info.status.count + sumStringNumbers(text);
+    await user.updateStatus({ count: nextCount })
 }
 
 export const replyCounterMessage = (user: any, event: any) => {
@@ -16,4 +17,10 @@ export const replyCounterMessage = (user: any, event: any) => {
             "text": `カウント: ${user.info.status.count}`
         }
     ]
+}
+
+function sumStringNumbers(input: string): number {
+    // 文字列をスペースで分割し、各要素を数値に変換してから合計します
+    return input.trim().split(' ')
+        .reduce((sum, num) => sum + parseInt(num, 10), 0);
 }
