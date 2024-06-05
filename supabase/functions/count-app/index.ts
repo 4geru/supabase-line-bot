@@ -30,7 +30,7 @@ serve(async (req) => {
       }
     ]
     if(isCounterMessage(events[0].message.text)) {
-      await executeCounterMessage(user)
+      await executeCounterMessage(user, events[0].message.text)
       messages = replyCounterMessage(user, events[0])
     }
 

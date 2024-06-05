@@ -1,4 +1,4 @@
-import { supabaseClient } from './supabaseClient'
+import { supabaseClient } from './supabaseClient.ts'
 
 export class User {
     _supabase = supabaseClient()

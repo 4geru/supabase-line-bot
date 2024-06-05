@@ -8,6 +8,7 @@ export const isCounterMessage = (text: string) => {
 export const executeCounterMessage = async (user: any, text: string) => {
     const nextCount = user.info.status.count + sumStringNumbers(text);
     await user.updateStatus({ count: nextCount })
+    user.info.status.count = nextCount
 }
 
 export const replyCounterMessage = (user: any, event: any) => {
