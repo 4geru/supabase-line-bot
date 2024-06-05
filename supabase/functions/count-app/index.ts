@@ -5,11 +5,18 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { replyMessage } from './messages.ts'
 import { supabaseClient } from './supabaseClient.ts'
+import { User } from './user.ts'
+import { isCounterMessage, replyCounterMessage } from './message_event/counter.ts'
 
 console.log("Hello from Functions!")
 
 serve(async (req) => {
   const { events } = await req.json()
+  const supabase = supabaseClient()
+  const user = new User({ userId: events[0].source.userId })
+  await user.load()
+  user.updateStatus({ count: user.info.status.count + 1 })
+
   console.log(events)
   if (events && events[0]?.type === "message") {
     // 文字列化したメッセージデータ
@@ -23,6 +30,9 @@ serve(async (req) => {
         "text": "テスト / test で単語を登録できます"
       }
     ]
+    if(isCounterMessage(events[0].message.text)) {
+      messages = await replyCounterMessage(events[0])
+    }
 
     replyMessage(events, messages)
   }
