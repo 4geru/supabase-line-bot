@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "deploy": " supabase functions deploy count-app --no-verify-jwt"
   },
   "author": "",
   "license": "ISC",

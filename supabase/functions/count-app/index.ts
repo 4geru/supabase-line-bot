@@ -6,7 +6,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { replyMessage } from './messages.ts'
 import { supabaseClient } from './supabaseClient.ts'
 import { User } from './user.ts'
-import { isCounterMessage, replyCounterMessage } from './message_event/counter.ts'
+import { isCounterMessage, executeCounterMessage, replyCounterMessage } from './message_event/counter.ts'
 
 console.log("Hello from Functions!")
 
@@ -15,7 +15,6 @@ serve(async (req) => {
   const supabase = supabaseClient()
   const user = new User({ userId: events[0].source.userId })
   await user.load()
-  user.updateStatus({ count: user.info.status.count + 1 })
 
   console.log(events)
   if (events && events[0]?.type === "message") {
@@ -31,7 +30,8 @@ serve(async (req) => {
       }
     ]
     if(isCounterMessage(events[0].message.text)) {
-      messages = await replyCounterMessage(events[0])
+      await executeCounterMessage(user)
+      messages = replyCounterMessage(user, events[0])
     }
 
     replyMessage(events, messages)
