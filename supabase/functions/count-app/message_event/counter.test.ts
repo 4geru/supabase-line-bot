@@ -1,4 +1,4 @@
-const { isCounterMessage, executeCounterMessage } = require('./counter');
+const { isCounterMessage, executeCounterMessage, replyCounterMessage } = require('./counter');
 const { User } = require('../user');
 
 jest.mock('../supabaseClient', () => ({
@@ -42,3 +42,25 @@ describe('executeCounterMessage', () => {
     expect(user.updateStatus).toHaveBeenCalledWith({ count: 6 });
   });
 });
+
+describe('replyCounterMessage', () => { 
+  it('should return a message with the user count', () => {
+    const user = {
+      info: {
+        status: {
+          count: 10
+        }
+      }
+    };
+    const event = {};
+
+    const result = replyCounterMessage(user, event);
+
+    expect(result).toEqual([
+      {
+        "type": "text",
+        "text": `カウント: ${user.info.status.count}`
+      }
+    ]);
+  });
+})

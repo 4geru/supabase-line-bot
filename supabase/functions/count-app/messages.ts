@@ -17,7 +17,7 @@ export const replyMessage = (events, messages) => {
             body: dataString,
             headers: headers,
         }
-    ).then(r => {console.log(r)})
+    ).then(r => { console.log('=== replied ==='); console.log(r)})
     .catch(e => { console.log(e) })
 }
 
@@ -45,6 +45,6 @@ export const pushMessage = (toId, messages) => {
             body: dataString,
             headers: headers,
         }
-    ).then(r => {console.log(r)})
+    ).then(r => { console.log('=== pushed ==='); console.log(r)})
     .catch(e => { console.log(e) })
 }

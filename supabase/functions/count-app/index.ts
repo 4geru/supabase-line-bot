@@ -7,17 +7,34 @@ import { replyMessage } from './messages.ts'
 import { supabaseClient } from './supabaseClient.ts'
 import { User } from './user.ts'
 import { isCounterMessage, executeCounterMessage, replyCounterMessage } from './message_event/counter.ts'
+import { isResetPostback, executeResetPostback, replyResetPostback } from './postback_event/reset.ts'
 
 console.log("Hello from Functions!")
 
-serve(async (req) => {
+serve(async (req: any) => {
   const { events } = await req.json()
   const supabase = supabaseClient()
   const user = new User({ userId: events[0].source.userId })
   await user.load()
 
-  console.log(events)
-  if (events && events[0]?.type === "message") {
+  console.log({events})
+
+  if (events && events[0]?.type === "postback") {
+    let messages:any = [
+      {
+        "type": "text",
+        "text": "postback"
+      }
+    ]
+    events[0].postback.data = JSON.parse(events[0].postback.data)
+
+    if(isResetPostback("reset")) {
+      executeResetPostback(user)
+      messages = replyResetPostback(user, events[0])
+    }
+
+    replyMessage(events, messages)
+  } else if (events && events[0]?.type === "message") {
     // 文字列化したメッセージデータ
     let messages:any = [
       {
@@ -29,11 +46,14 @@ serve(async (req) => {
         "text": "テスト / test で単語を登録できます"
       }
     ]
-    if(isCounterMessage(events[0].message.text)) {
+
+    if(false) {}
+    else if(isCounterMessage(events[0].message.text)) {
       await executeCounterMessage(user, events[0].message.text)
       messages = replyCounterMessage(user, events[0])
     }
 
+    console.log({messages})
     replyMessage(events, messages)
   }
 
