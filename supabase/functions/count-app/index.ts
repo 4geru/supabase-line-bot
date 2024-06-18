@@ -49,7 +49,7 @@ serve(async (req: any) => {
 
     if(false) {}
     else if(isCounterMessage(events[0].message.text)) {
-      await executeCounterMessage(user, events[0].message.text)
+      await executeCounterMessage(user, events[0].message.text, supabase)
       messages = replyCounterMessage(user, events[0])
     }
 

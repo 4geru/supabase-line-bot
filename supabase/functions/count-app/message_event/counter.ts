@@ -5,9 +5,12 @@ export const isCounterMessage = (text: string) => {
     return false
 }
 
-export const executeCounterMessage = async (user: any, text: string) => {
+export const executeCounterMessage = async (user: any, text: string, supabase: any) => {
     const nextCount = user.info.status.count + sumStringNumbers(text);
     await user.updateStatus({ count: nextCount })
+    await supabase.from('counts')
+        .upsert({ user_id: user.userId, posts: [text] })
+
     user.info.status.count = nextCount
 }
 
